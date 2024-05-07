@@ -1,5 +1,5 @@
 /*
-AOL Data Structure 
+AOL Data Structure
 Alfandi Rifa'ul Nurhuda
 2703393673
 LM01
@@ -9,7 +9,7 @@ LM01
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#define charToIndex(c) (((int)c) - ((int)'a'))
+
 const int ALPHABET_SIZE = 26;
 
 struct trieNode{
@@ -17,6 +17,11 @@ struct trieNode{
     char *desc;
     trieNode *child[ALPHABET_SIZE];
 };
+
+int charToIndex(char c)
+{
+    return (int)c - 'a';
+}
 
 trieNode *createNode(char *slangWord, char *desc)
 {
@@ -35,44 +40,6 @@ trieNode *createNode(char *slangWord, char *desc)
         
         return newNode;
     }
-}
-
-// function to validate the word is valid or not
-bool validateWord(char *word)
-{
-    for(int i=0; i<strlen(word); i++)
-    {
-        if(word[i] == ' ')
-        {
-            return false;
-        }
-    }
-
-    if(strlen(word) <= 1)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-bool validateDescription(char *desc)
-{
-    int count = 0;
-    for(int i=0; i<strlen(desc); i++)
-    {
-        if(desc[i] == ' ')
-        {
-            count++;
-        }
-    }
-
-    if(count > 0)
-    {
-        return true;
-    }
-
-    return false;
 }
 
 trieNode *searchNode(trieNode *node, const char *slangWord)
@@ -125,54 +92,134 @@ void insertNode(trieNode *node, char *word, char *desc)
 
         current->isEndOfWord = true;
 
-        free(current->desc);
-        current->desc = (char*)malloc(strlen(desc) + 1);
         strcpy(current->desc, desc);
+
+        puts("Successfully released new slang word.\n");
     }
+}
+
+// function to validate the word is valid or not
+bool validateWord(char *word)
+{
+    for(int i=0; i<strlen(word); i++)
+    {
+        if(word[i] == ' ')
+        {
+            return false;
+        }
+    }
+
+    if(strlen(word) <= 1)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool validateDescription(char *desc)
+{
+    int count = 0;
+    for(int i=0; i<strlen(desc); i++)
+    {
+        if(desc[i] == ' ')
+        {
+            count++;
+        }
+    }
+
+    if(count >= 1)
+    {
+        return true;
+    }
+
+    return false;
 }
 
 void realeseNewSlangWord(trieNode *node)
 {   
-    char *slangWord = (char*)malloc(10);
-    char *desc = (char*)malloc(100);
-
-    printf("Input a new slang word [Must be more than 1 characters and contains no space]: ");
-    scanf("%s", slangWord);
-    getchar();
-
-    void descInput()
+    char slangWord[10];
+    char desc[100];
+    do
     {
-        printf("Input a new slang word description [Must be more than 2 words]: ");
+        printf("Enter the slang word: ");
+        scanf("%s", slangWord);
+        getchar();
+    }
+    while(!validateWord(slangWord));
+
+    do
+    {
+        printf("Enter the description: ");
         scanf("%[^\n]", desc);
         getchar();
     }
-
-    if(validateWord(slangWord))
-    {
-        descInput();
-    }
-    else
-    {
-        while(true)
-        {
-            printf("Input a new slang word [Must be more than 1 characters and contains no space]: ");
-            scanf("%s", slangWord);
-            getchar();
-            if(validateWord(slangWord))
-            {
-                descInput();
-                break;
-            }
-        }
-    }
+    while(!validateDescription(desc));
 
     insertNode(node, slangWord, desc);
 
-    printf("Successfully released new slang word\n");
-
-    free(slangWord);
-    free(desc);
 }
 
+void searchSlangWord(trieNode *node)
+{
+    char slangWord[10];
+    trieNode *searchedNode;
+
+    do
+    {
+        printf("Enter the slang word: ");
+        scanf("%s", slangWord);
+        getchar();
+    }
+    while(!validateWord(slangWord));
+
+    searchedNode = searchNode(node, slangWord);
+
+    if(searchedNode != NULL)
+    {
+        printf("Slang word  : %s\n", slangWord);
+        printf("Description : %s\n", searchedNode->desc);
+    }
+    else
+    {
+        printf("There is no word \"%s\" in the dictionary.\n", slangWord);
+    }
+}
+
+void mainMenu(trieNode *node)
+{
+    int choice;
+
+    printf("1. Realese a new slang word\n");
+    printf("2. Search a slang word\n");
+    puts("3. View all slang words starting with a certain prefix word");
+    
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    switch(choice)
+    {
+        case 1:
+            realeseNewSlangWord(node);
+            break;
+        case 2:
+            searchSlangWord(node);
+            break;
+        default:
+            puts("Invalid choice\n");
+    }
+}
+
+int main()
+{
+    trieNode *root = createNode(" ", " ");
+
+    while(true)
+    {
+        mainMenu(root);
+    }
+
+    return 0;
+}
 
 
