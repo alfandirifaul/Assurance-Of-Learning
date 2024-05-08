@@ -11,9 +11,11 @@ LM01
 #include <stdlib.h>
 #include <stdbool.h>
 
+// Constan variable to define the amount of alphabet   
 const int ALPHABET_SIZE = 26;
 
-void clearScreen() // Function to clear the screen with OS specific command
+// Function to clear the screen with OS specific command
+void clearScreen() 
 {
     // Checks if _WIN32 is defined, _WIN32 is defined in all window OS
     #ifdef _WIN32 
@@ -31,21 +33,27 @@ struct trieNode{
     trieNode *child[ALPHABET_SIZE];
 };
 
+// Function to convert character to index in range 0-25.
 int charToIndex(char c)
 {
     return (int)c - 'a';
 }
 
+// Function to create a new node
 trieNode *createNode(char *slangWord, char *desc)
 {
     trieNode *newNode = (trieNode*)malloc(sizeof(trieNode));
 
+    // Initialize the node and set the isEndOfWord to false
+    // Then allocate memory for the description and copy the description to the node
     if(newNode)
     {
         newNode->isEndOfWord = false;
         newNode->desc = (char*)malloc(strlen(desc) + 1);
         strcpy(newNode->desc, desc);
 
+        // Initialize all child nodes to NULL
+        // So that we can check if the child is present or not
         for(int i=0; i<ALPHABET_SIZE; i++)
         {
             newNode->child[i] = NULL;
@@ -55,10 +63,13 @@ trieNode *createNode(char *slangWord, char *desc)
     }
 }
 
+// Function to search a node in the trie
 trieNode *searchNode(trieNode *node, const char *slangWord)
 {
     trieNode *current = node;
 
+    // Traverse the trie and check if the node is present or not
+    // If the node is present, then return the node
     for(int i=0; i<strlen(slangWord); i++){
         int index = charToIndex(slangWord[i]);
 
@@ -70,13 +81,17 @@ trieNode *searchNode(trieNode *node, const char *slangWord)
         current = current->child[index];
     }
 
+    // If the current node is the end of the word, then return the node
     return (current != NULL && current->isEndOfWord) ? current : NULL;
 }
 
+// Function to insert a node in the trie
 void insertNode(trieNode *node, char *word, char *desc)
-{
+{   
+    // Search the node in the trie
     trieNode *existingNode = searchNode(node, word);
 
+    // If the node is exist, then update the description
     if(existingNode != NULL)
     {
         free(existingNode->desc);
@@ -87,6 +102,8 @@ void insertNode(trieNode *node, char *word, char *desc)
 
         return;
     }
+
+    // If the node is not exist, then create a new node
     else
     {
         trieNode *current = node;
@@ -111,9 +128,10 @@ void insertNode(trieNode *node, char *word, char *desc)
     }
 }
 
-// function to validate the word is valid or not
+// Function to validate the word is valid or not valid
 bool validateWord(char *word)
-{
+{   
+    // Check the word length is more than 1 and contains space or not
     if(strlen(word) > 1)
     {
         for(int i=0; i<strlen(word); i++)
@@ -129,9 +147,13 @@ bool validateWord(char *word)
     return false;
 }
 
+// Function to validate the description is valid or not valid
 bool validateDescription(char *desc)
-{
+{   
+    // Variable to count the words in the description
     int count = 0;
+
+    // Check the description contains more than 2 words or not
     for(int i=0; i<strlen(desc); i++)
     {
         if(desc[i] == ' ')
@@ -148,13 +170,16 @@ bool validateDescription(char *desc)
     return false;
 }
 
-// function to realese new slang word
+// Function to realese new slang word or updated existing slang word
 void realeseNewSlangWord(trieNode *node)
 {   
     char slangWord[100];
     char desc[100];
     getchar();
 
+    // Ask the user for input the slang word
+    // The slang word must be more than 1 characters and contains no space
+    // And code will keep asking the user until the input is valid
     do
     {
         printf("Enter the slang word [Must be more than 1 characters and contains no space]: ");
@@ -163,6 +188,9 @@ void realeseNewSlangWord(trieNode *node)
     }
     while(!validateWord(slangWord));
 
+    // Ask the user for input the description
+    // The description must be more than 2 words
+    // And code will keep asking the user until the input is valid
     do
     {
         printf("Enter the description [Must be more than 2 words]: ");
@@ -171,15 +199,19 @@ void realeseNewSlangWord(trieNode *node)
     }
     while(!validateDescription(desc));
 
+    // Insert the node in the trie if all of the input requirement is valid
     insertNode(node, slangWord, desc);
-
 }
 
+// Function to search a slang word in the trie
 void searchSlangWord(trieNode *node)
 {
     char slangWord[10];
     trieNode *searchedNode;
 
+    // Ask the user for input the slang word
+    // The slang word must be more than 1 characters and contains no space
+    // And code will keep asking the user until the input is valid
     do
     {
         printf("Input a slang word to be searched [Must be more than 1 characters and contain no space]: ");
@@ -188,14 +220,18 @@ void searchSlangWord(trieNode *node)
     }
     while(!validateWord(slangWord));
 
+    // Search the node in the trie
     searchedNode = searchNode(node, slangWord);
 
+    // If the node is exist, then print the slang word and the description
     if(searchedNode != NULL)
     {
         puts("");
         printf("Slang word  : %s\n", slangWord);
         printf("Description : %s\n", searchedNode->desc);
     }
+
+    // If the node is not exist, then print the message
     else
     {
         puts("");
@@ -203,14 +239,18 @@ void searchSlangWord(trieNode *node)
     }
 }
 
+// Function to print all words in the trie
 void printAllWords(trieNode *node, char *prefix, int index, int *count)
 {   
+    // If the node is the end of the word, then print the word
     if(node->isEndOfWord)
     {   
         prefix[index] = '\0';
         printf("%d. %s\n",(*count)++, prefix);
     }
 
+    // Traverse all child nodes and print the word
+    // If the child is exist, then call the function recursively to print the word
     for(int i=0; i<ALPHABET_SIZE; i++)
     {
         if(node->child[i])
@@ -222,11 +262,13 @@ void printAllWords(trieNode *node, char *prefix, int index, int *count)
             printAllWords(node->child[i], newPrefix, index + 1, count);
         }
     }
-    prefix[index] = '\0';
 
-    
+    // Set the last character of the prefix to null character
+    // So that the prefix will be empty
+    prefix[index] = '\0';
 }
 
+// Function to print all words with prefix in the trie
 void printWordsWithPrefix(trieNode *node, char *prefix)
 {
     trieNode *current = node;
@@ -234,27 +276,32 @@ void printWordsWithPrefix(trieNode *node, char *prefix)
     char word[len + 1];
     int count = 1;
 
+    // Traverse the trie and check if the prefix is exist or not
     for(int i=0; i<len; i++)
     {
-        int index = charToIndex(prefix[i]);
+        // Convert the character to index
+        int index = charToIndex(prefix[i]); 
 
+        // If the child is not exist, then print the message
         if(!current->child[index])
         {
             printf("There is no prefix \"%s\" in the dictionary\n", prefix);
             return;
         }
         
+        // Copy the prefix to the word so that the word will be the same as the prefix
+        // Then set the current node to the child node
         word[i] = prefix[i];
         current = current->child[index];
     }
 
-    // If we reach here, we have found the node where the prefix ends
-    // Now we need to print all words in the sub-trie of this node
-    word[len] = '\0'; // word contains the prefix now
+    // Set the last character of the word to null character
+    // And then call the function to print all words with prefix
+    word[len] = '\0'; 
     printAllWords(current, prefix, len, &count);
 }
 
-
+// Function to view all slang words with prefix
 void viewAllSlangWordsWithPrefix(trieNode *node)
 {
     char prefix[10];
@@ -267,6 +314,7 @@ void viewAllSlangWordsWithPrefix(trieNode *node)
     printWordsWithPrefix(node, prefix);
 }
 
+// Function to check if child is present or not
 bool checkIfChildPresent(trieNode *node)
 {
     for(int i=0; i<ALPHABET_SIZE; i++)
@@ -280,6 +328,7 @@ bool checkIfChildPresent(trieNode *node)
     return false;
 }
 
+// Function to view all slang words in the trie
 void viewAllSlangWords(trieNode *node)
 {   
     bool childPresent = checkIfChildPresent(node);
@@ -299,6 +348,7 @@ void viewAllSlangWords(trieNode *node)
     getchar();
 }
 
+// Function to create the line "press enter to continue..."
 void pressEnterToContinue()
 {   
     puts("Press enter to continue...");
@@ -306,6 +356,8 @@ void pressEnterToContinue()
     clearScreen();
 }
 
+// Function to display the menu of the program
+// And call the function based on the user input
 void mainMenu(trieNode *node)
 {   
     clearScreen();
@@ -315,8 +367,9 @@ void mainMenu(trieNode *node)
     puts("2. Search a slang word");
     puts("3. View all slang words starting with a certain prefix word");
     puts("4. View all slang words");
+    puts("5. Exit");
     
-    printf("Enter your choice: ");
+    printf("\nEnter your choice: ");
     scanf("%d", &choice);
     clearScreen();
 
@@ -355,8 +408,10 @@ void mainMenu(trieNode *node)
 
 int main()
 {
+    // Create a root node
     trieNode *root = createNode(" ", " ");
 
+    // Display the menu to show to user
     while(true)
     {
         mainMenu(root);
