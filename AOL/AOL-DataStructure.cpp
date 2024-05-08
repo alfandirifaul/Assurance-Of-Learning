@@ -266,7 +266,17 @@ void viewAllSlangWordsWithPrefix(trieNode *node)
 
 void viewAllSlangWords(trieNode *node)
 {
-    if(node->child == NULL)
+    bool childPresent = false;
+    for(int i =0;i<26;i++)
+    {
+        if(node->child[i] != NULL)
+        {
+            childPresent = true;
+            break;
+        }
+    }
+    
+    if(childPresent == false)
     {
         puts("There is no slang word yet in the dictionary.");
         return;
