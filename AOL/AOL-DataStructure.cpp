@@ -14,13 +14,16 @@ const int ALPHABET_SIZE = 26;
 
 void clearScreen() // Function to clear the screen with OS specific command
 {
-    #ifdef _WIN32 // Checks if _WIN32 is defined, _WIN32 is defined in all window OS
+    // Checks if _WIN32 is defined, _WIN32 is defined in all window OS
+    #ifdef _WIN32 
         system("cls");
-    #else // else, assume we are on a unix based system in which system(`clear`) is the command
+    // else, assume we are on a unix based system in which system(`clear`) is the command
+    #else 
         system("clear");
     #endif
 }
 
+// Struct of trie node
 struct trieNode{
     bool isEndOfWord;
     char *desc;
@@ -144,6 +147,7 @@ bool validateDescription(char *desc)
     return false;
 }
 
+// function to realese new slang word
 void realeseNewSlangWord(trieNode *node)
 {   
     char slangWord[10];
@@ -217,6 +221,7 @@ void printAllWords(trieNode *node, char *prefix, int index, int *count)
             printAllWords(node->child[i], newPrefix, index + 1, count);
         }
     }
+    prefix[index] = '\0';
 }
 
 void printWordsWithPrefix(trieNode *node, char *prefix)
@@ -259,6 +264,22 @@ void viewAllSlangWordsWithPrefix(trieNode *node)
     printWordsWithPrefix(node, prefix);
 }
 
+void viewAllSlangWords(trieNode *node)
+{
+    if(node == createNode(" ", " "))
+    {
+        puts("There is no slang word yet in the dictionary.");
+        return;
+    }
+
+    int count = 1;
+    char prefix[100];
+    
+    puts("");
+    puts("List of all slang words in the dictionary:");
+    printAllWords(node, prefix, 0, &count);
+}
+
 void pressEnterToContinue()
 {   
     puts("Press enter to continue...");
@@ -268,37 +289,38 @@ void pressEnterToContinue()
 
 void mainMenu(trieNode *node)
 {   
-    clearScreen();
+    // clearScreen();
     int choice;
 
-    printf("1. Realese a new slang word\n");
-    printf("2. Search a slang word\n");
+    puts("1. Realese a new slang word");
+    puts("2. Search a slang word");
     puts("3. View all slang words starting with a certain prefix word");
+    puts("4. View all slang words");
     
     printf("Enter your choice: ");
     scanf("%d", &choice);
-    clearScreen();
+    // clearScreen();
 
     switch(choice)
     {
         case 1:
             realeseNewSlangWord(node);
-            pressEnterToContinue();
+            // pressEnterToContinue();
             break;
 
         case 2:
             searchSlangWord(node);
-            pressEnterToContinue();
+            // pressEnterToContinue();
             break;
 
         case 3:
             viewAllSlangWordsWithPrefix(node);
-            pressEnterToContinue();
+            // pressEnterToContinue();
             break;
 
         case 4:
-            // viewAll(node);
-            pressEnterToContinue();
+            viewAllSlangWords(node);
+            // pressEnterToContinue();
             break;
 
         default:
