@@ -266,7 +266,7 @@ void viewAllSlangWordsWithPrefix(trieNode *node)
 
 void viewAllSlangWords(trieNode *node)
 {
-    if(node == createNode(" ", " "))
+    if(node->child == NULL)
     {
         puts("There is no slang word yet in the dictionary.");
         return;
