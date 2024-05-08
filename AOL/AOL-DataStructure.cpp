@@ -12,6 +12,15 @@ LM01
 
 const int ALPHABET_SIZE = 26;
 
+void clearScreen() // Function to clear the screen with OS specific command
+{
+    #ifdef _WIN32 // Checks if _WIN32 is defined, _WIN32 is defined in all window OS
+        system("cls");
+    #else // else, assume we are on a unix based system in which system(`clear`) is the command
+        system("clear");
+    #endif
+}
+
 struct trieNode{
     bool isEndOfWord;
     char *desc;
@@ -29,7 +38,7 @@ trieNode *createNode(char *slangWord, char *desc)
 
     if(newNode)
     {
-        newNode->isEndOfWord = slangWord[slangWord[strlen(slangWord)-1]] == '\0' ? true : false;
+        newNode->isEndOfWord = false;
         newNode->desc = (char*)malloc(strlen(desc) + 1);
         strcpy(newNode->desc, desc);
 
@@ -70,7 +79,7 @@ void insertNode(trieNode *node, char *word, char *desc)
         existingNode->desc = (char*)malloc(strlen(desc) + 1);
         strcpy(existingNode->desc, desc);
 
-        puts("Successfully updated the slang word.\n");
+        puts("\nSuccessfully updated a slang word.");
 
         return;
     }
@@ -94,27 +103,26 @@ void insertNode(trieNode *node, char *word, char *desc)
 
         strcpy(current->desc, desc);
 
-        puts("Successfully released new slang word.\n");
+        puts("\nSuccessfully released new slang word.");
     }
 }
 
 // function to validate the word is valid or not
 bool validateWord(char *word)
 {
-    for(int i=0; i<strlen(word); i++)
+    if(strlen(word) > 1)
     {
-        if(word[i] == ' ')
+        for(int i=0; i<strlen(word); i++)
         {
-            return false;
+            if(word[i] == ' ')
+            {
+                return false;
+            }
         }
+        return true;
     }
-
-    if(strlen(word) <= 1)
-    {
-        return false;
-    }
-
-    return true;
+    
+    return false;
 }
 
 bool validateDescription(char *desc)
@@ -140,17 +148,19 @@ void realeseNewSlangWord(trieNode *node)
 {   
     char slangWord[10];
     char desc[100];
+    getchar();
+
     do
     {
-        printf("Enter the slang word: ");
-        scanf("%s", slangWord);
+        printf("Enter the slang word [Must be more than 1 characters and contains no space]: ");
+        scanf("%[^\n]", slangWord);
         getchar();
     }
     while(!validateWord(slangWord));
 
     do
     {
-        printf("Enter the description: ");
+        printf("Enter the description [Must be more than 2 words]: ");
         scanf("%[^\n]", desc);
         getchar();
     }
@@ -167,7 +177,7 @@ void searchSlangWord(trieNode *node)
 
     do
     {
-        printf("Enter the slang word: ");
+        printf("Input a slang word to be searched [Must be more than 1 characters and contain no space]: ");
         scanf("%s", slangWord);
         getchar();
     }
@@ -177,17 +187,88 @@ void searchSlangWord(trieNode *node)
 
     if(searchedNode != NULL)
     {
+        puts("");
         printf("Slang word  : %s\n", slangWord);
         printf("Description : %s\n", searchedNode->desc);
     }
     else
     {
+        puts("");
         printf("There is no word \"%s\" in the dictionary.\n", slangWord);
     }
 }
 
-void mainMenu(trieNode *node)
+void printAllWords(trieNode *node, char *prefix, int index, int *count)
+{   
+    if(node->isEndOfWord)
+    {   
+        prefix[index] = '\0';
+        printf("%d. %s\n",(*count)++, prefix);
+    }
+
+    for(int i=0; i<ALPHABET_SIZE; i++)
+    {
+        if(node->child[i])
+        {
+            char newPrefix[index + 2];
+            strncpy(newPrefix, prefix, index);
+            newPrefix[index] = 'a' + i;
+            newPrefix[index + 1] = '\0';
+            printAllWords(node->child[i], newPrefix, index + 1, count);
+        }
+    }
+}
+
+void printWordsWithPrefix(trieNode *node, char *prefix)
 {
+    trieNode *current = node;
+    int len = strlen(prefix);
+    char word[len + 1];
+    int count = 1;
+
+    for(int i=0; i<len; i++)
+    {
+        int index = charToIndex(prefix[i]);
+
+        if(!current->child[index])
+        {
+            printf("There is no prefix \"%s\" in the dictionary\n", prefix);
+            return;
+        }
+        
+        word[i] = prefix[i];
+        current = current->child[index];
+    }
+
+    // If we reach here, we have found the node where the prefix ends
+    // Now we need to print all words in the sub-trie of this node
+    word[len] = '\0'; // word contains the prefix now
+    printAllWords(current, prefix, len, &count);
+}
+
+
+void viewAllSlangWordsWithPrefix(trieNode *node)
+{
+    char prefix[10];
+
+    printf("Enter the prefix to be searched: ");
+    scanf("%s", prefix);
+    getchar();
+
+    puts("");
+    printWordsWithPrefix(node, prefix);
+}
+
+void pressEnterToContinue()
+{   
+    puts("Press enter to continue...");
+    getchar();
+    clearScreen();
+}
+
+void mainMenu(trieNode *node)
+{   
+    clearScreen();
     int choice;
 
     printf("1. Realese a new slang word\n");
@@ -196,15 +277,30 @@ void mainMenu(trieNode *node)
     
     printf("Enter your choice: ");
     scanf("%d", &choice);
+    clearScreen();
 
     switch(choice)
     {
         case 1:
             realeseNewSlangWord(node);
+            pressEnterToContinue();
             break;
+
         case 2:
             searchSlangWord(node);
+            pressEnterToContinue();
             break;
+
+        case 3:
+            viewAllSlangWordsWithPrefix(node);
+            pressEnterToContinue();
+            break;
+
+        case 4:
+            // viewAll(node);
+            pressEnterToContinue();
+            break;
+
         default:
             puts("Invalid choice\n");
     }
