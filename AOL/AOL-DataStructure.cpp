@@ -1,3 +1,4 @@
+
 /*
 AOL Data Structure
 Alfandi Rifa'ul Nurhuda
@@ -150,7 +151,7 @@ bool validateDescription(char *desc)
 // function to realese new slang word
 void realeseNewSlangWord(trieNode *node)
 {   
-    char slangWord[10];
+    char slangWord[100];
     char desc[100];
     getchar();
 
@@ -222,6 +223,8 @@ void printAllWords(trieNode *node, char *prefix, int index, int *count)
         }
     }
     prefix[index] = '\0';
+
+    
 }
 
 void printWordsWithPrefix(trieNode *node, char *prefix)
@@ -264,30 +267,36 @@ void viewAllSlangWordsWithPrefix(trieNode *node)
     printWordsWithPrefix(node, prefix);
 }
 
-void viewAllSlangWords(trieNode *node)
+bool checkIfChildPresent(trieNode *node)
 {
-    bool childPresent = false;
-    for(int i =0;i<26;i++)
+    for(int i=0; i<ALPHABET_SIZE; i++)
     {
         if(node->child[i] != NULL)
         {
-            childPresent = true;
-            break;
+            return true;
         }
     }
-    
-    if(childPresent == false)
+
+    return false;
+}
+
+void viewAllSlangWords(trieNode *node)
+{   
+    bool childPresent = checkIfChildPresent(node);
+
+    if(!childPresent)
     {
-        puts("There is no slang word yet in the dictionary.");
+        getchar();
+        puts("There is no slang word in the dictionary.");
         return;
     }
 
     int count = 1;
     char prefix[100];
     
-    puts("");
     puts("List of all slang words in the dictionary:");
     printAllWords(node, prefix, 0, &count);
+    getchar();
 }
 
 void pressEnterToContinue()
@@ -299,7 +308,7 @@ void pressEnterToContinue()
 
 void mainMenu(trieNode *node)
 {   
-    // clearScreen();
+    clearScreen();
     int choice;
 
     puts("1. Realese a new slang word");
@@ -309,32 +318,38 @@ void mainMenu(trieNode *node)
     
     printf("Enter your choice: ");
     scanf("%d", &choice);
-    // clearScreen();
+    clearScreen();
 
     switch(choice)
     {
         case 1:
             realeseNewSlangWord(node);
-            // pressEnterToContinue();
+            pressEnterToContinue();
             break;
 
         case 2:
             searchSlangWord(node);
-            // pressEnterToContinue();
+            pressEnterToContinue();
             break;
 
         case 3:
             viewAllSlangWordsWithPrefix(node);
-            // pressEnterToContinue();
+            pressEnterToContinue();
             break;
 
         case 4:
             viewAllSlangWords(node);
-            // pressEnterToContinue();
+            pressEnterToContinue();
+            break;
+        
+        case 5:
+            puts("Thank you... Have a nice day :)");
+            exit(0);
             break;
 
         default:
             puts("Invalid choice\n");
+            break;
     }
 }
 
@@ -349,5 +364,3 @@ int main()
 
     return 0;
 }
-
-
