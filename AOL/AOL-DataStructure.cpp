@@ -6,10 +6,18 @@ Alfandi Rifa'ul Nurhuda
 LM01
 */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdbool.h>
+
+// Include the standard input/output header file 'stdio.h
+#include <stdio.h> 
+// Include the string header file 'string.h'
+#include <string.h> 
+// Include the standard library header file 'stdlib.h'
+#include <stdlib.h> 
+// Include the boolean header file 'stdbool.h'
+#include <stdbool.h> 
+
+// Constan variable to define the maximum length of the word
+const int MAX_LENGTH = 100;
 
 // Constan variable to define the amount of alphabet   
 const int ALPHABET_SIZE = 26;
