@@ -78,7 +78,8 @@ trieNode *searchNode(trieNode *node, const char *slangWord)
 
     // Traverse the trie and check if the node is present or not
     // If the node is present, then return the node
-    for(int i=0; i<strlen(slangWord); i++){
+    for(int i=0; i<strlen(slangWord); i++)
+    {
         int index = charToIndex(slangWord[i]);
 
         if(!current->child[index])
@@ -181,8 +182,8 @@ bool validateDescription(char *desc)
 // Function to realese new slang word or updated existing slang word
 void realeseNewSlangWord(trieNode *node)
 {   
-    char slangWord[100];
-    char desc[100];
+    char slangWord[MAX_LENGTH];
+    char desc[MAX_LENGTH];
     getchar();
 
     // Ask the user for input the slang word
@@ -352,7 +353,7 @@ void viewAllSlangWords(trieNode *node)
     }
 
     int count = 1;
-    char prefix[100];
+    char prefix[MAX_LENGTH];
     
     puts("List of all slang words in the dictionary:");
     printAllWords(node, prefix, 0, &count);
