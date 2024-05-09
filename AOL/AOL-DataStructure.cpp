@@ -323,7 +323,6 @@ void viewAllSlangWordsWithPrefix(trieNode *node)
 
     puts("");
     printWordsWithPrefix(node, prefix);
-    puts("");
 }
 
 // Function to check if child is present or not
@@ -376,43 +375,52 @@ void mainMenu(trieNode *node)
     clearScreen();
     int choice;
 
+    // Display the menu to show to user
     puts("1. Realese a new slang word");
     puts("2. Search a slang word");
     puts("3. View all slang words starting with a certain prefix word");
     puts("4. View all slang words");
     puts("5. Exit");
     
+    // Ask the user for input the choice
     printf("\nEnter your choice: ");
     scanf("%d", &choice);
     clearScreen();
 
+    // Call the function based on the user input
     switch(choice)
     {
+        // If the choice is 1, then call the function to realese new slang word 
         case 1:
             realeseNewSlangWord(node);
             pressEnterToContinue();
             break;
 
+        // If the choice is 2, then call the function to search a slang word
         case 2:
             searchSlangWord(node);
             pressEnterToContinue();
             break;
 
+        // If the choice is 3, then call the function to view all slang words with prefix
         case 3:
             viewAllSlangWordsWithPrefix(node);
             pressEnterToContinue();
             break;
 
+        // If the choice is 4, then call the function to view all slang words
         case 4:
             viewAllSlangWords(node);
             pressEnterToContinue();
             break;
         
+        // If the choice is 5, then exit the program
         case 5:
             puts("Thank you... Have a nice day :)");
             exit(0);
             break;
 
+        // If the choice is invalid, then print the message
         default:
             puts("Invalid choice\n");
             break;
@@ -432,3 +440,4 @@ int main()
 
     return 0;
 }
+
