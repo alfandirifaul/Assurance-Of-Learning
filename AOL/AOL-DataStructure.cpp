@@ -229,6 +229,7 @@ void searchSlangWord(trieNode *node)
         puts("");
         printf("Slang word  : %s\n", slangWord);
         printf("Description : %s\n", searchedNode->desc);
+        puts("");
     }
 
     // If the node is not exist, then print the message
@@ -259,7 +260,7 @@ void printAllWords(trieNode *node, char *prefix, int index, int *count)
             strncpy(newPrefix, prefix, index);
             newPrefix[index] = 'a' + i;
             newPrefix[index + 1] = '\0';
-            printAllWords(node->child[i], newPrefix, index + 1, count);
+            printAllWords(node->child[i], newPrefix, (index + 1), count);
         }
     }
 
@@ -298,6 +299,7 @@ void printWordsWithPrefix(trieNode *node, char *prefix)
     // Set the last character of the word to null character
     // And then call the function to print all words with prefix
     word[len] = '\0'; 
+    printf("Words start with \"%s\":\n", prefix);
     printAllWords(current, prefix, len, &count);
 }
 
@@ -306,12 +308,14 @@ void viewAllSlangWordsWithPrefix(trieNode *node)
 {
     char prefix[10];
 
+    // Ask user to input prefix to search a slang word
     printf("Enter the prefix to be searched: ");
     scanf("%s", prefix);
     getchar();
 
     puts("");
     printWordsWithPrefix(node, prefix);
+    puts("");
 }
 
 // Function to check if child is present or not
@@ -345,6 +349,7 @@ void viewAllSlangWords(trieNode *node)
     
     puts("List of all slang words in the dictionary:");
     printAllWords(node, prefix, 0, &count);
+    puts("");
     getchar();
 }
 
